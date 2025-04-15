@@ -52,15 +52,9 @@ def add_processing_timestamp(df: pd.DataFrame) -> pd.DataFrame:
         return df
 
     df_processed = df.copy()
-    # Note: pd.Timestamp.utcnow() was common but deprecated later.
-    # pd.Timestamp.now(tz='UTC') is the replacement. Both work in 1.3.5.
-    # We use the older one here to show something that *might* need changing later.
-    try:
-        # This syntax is valid in 1.3.5 but deprecated later
-        df_processed['processing_ts_utc'] = pd.Timestamp.utcnow()
-    except AttributeError:
-        # Fallback for much older pandas if needed, or future-proofing
-         df_processed['processing_ts_utc'] = pd.Timestamp.now(tz='UTC')
+    # Note: pd.Timestamp.utcnow() was deprecated and removed in pandas 2.0
+    # Using the recommended pd.Timestamp.now(tz='UTC') approach
+    df_processed['processing_ts_utc'] = pd.Timestamp.now(tz='UTC')
 
     # Ensure the timestamp column is of datetime type
     df_processed['processing_ts_utc'] = pd.to_datetime(df_processed['processing_ts_utc'])
@@ -68,20 +62,19 @@ def add_processing_timestamp(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("Added processing timestamp column.")
     return df_processed
 
-# --- Example of a function that will change significantly in Pandas 2+ ---
-# In Pandas 1.3.5, append works but often raises FutureWarning
+# --- Function updated for pandas 2.0+ compatibility ---
 def append_data(df_original: pd.DataFrame, df_to_append: pd.DataFrame) -> pd.DataFrame:
     """
-    Appends one DataFrame to another.
-    NOTE: df.append is deprecated in later pandas versions and removed in 2.0.
-          Use pd.concat instead for future compatibility.
+    Combines two DataFrames.
+    Uses pd.concat which is the recommended approach in pandas 2.0+
+    (df.append was removed in pandas 2.0)
     """
-    logger.warning("Using df.append(), which is deprecated. Consider pd.concat().")
+    logger.info("Using pd.concat to combine DataFrames")
     if df_original.empty:
         return df_to_append.copy()
     if df_to_append.empty:
         return df_original.copy()
 
-    # ignore_index=True is important to reset the index
-    combined_df = df_original.append(df_to_append, ignore_index=True)
+    # Use pd.concat instead of append
+    combined_df = pd.concat([df_original, df_to_append], ignore_index=True)
     return combined_df
