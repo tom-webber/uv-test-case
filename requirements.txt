@@ -1,0 +1,5 @@
+pandas==1.3.5
+awswrangler>=2.0.0,<2.16.0  # Version range known to be compatible with pandas 1.3.x
+boto3>=1.18.0              # Dependency for awswrangler
+s3fs>=2021.11.0            # Dependency for awswrangler s3 access
+pyarrow>=6.0.0,<7.0.0       # Often used with pandas/awswrangler for performance
